@@ -36,7 +36,9 @@
 
 <body>
     <video autoplay></video>
-    <canvas id="canvas" style="border: 1px solid red"></canvas>
+    <div>
+        <h1 id="output"></h1>
+    </div>
     <script>
         window.onload = function() {
     var video = document.querySelector("video");
@@ -49,6 +51,7 @@
         const predictions = await model.estimateFaces(document.querySelector("video"), returnTensors);
       
         console.log(predictions.length);
+        document.getElementById("output").innerHTML = predictions.length + "faces detected";
       }
       
       setInterval(main, 1000);
