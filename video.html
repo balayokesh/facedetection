@@ -24,12 +24,10 @@
         div {
             height: 100vh;
             width: 50%;
-            display: inline;
         }
-        canvas {
+        video {
             height: 100vh;
-            width: 50%;
-            display: inline;
+            width: 50%;   
         }
     </style>
 </head>
@@ -42,6 +40,10 @@
     <script>
         window.onload = function() {
     var video = document.querySelector("video");
+    
+    // Accessing the camera stream
+
+    // For cross browser compatibility
     // navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => video.srcObject = stream);
 
