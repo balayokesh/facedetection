@@ -23,9 +23,10 @@
         }
         div {
             max-height: 80vh;
-            width: 50%;
+            width: 45%;
             overflow-y: auto;
-            margin: 10em;
+            color: red;
+            padding: 5px;
         }
         video {
             height: 100vh;
@@ -56,11 +57,12 @@
         const returnTensors = false;
         const predictions = await model.estimateFaces(document.querySelector("video"), returnTensors);
       
+        var time = new Date();
         console.log(predictions.length);
-        document.getElementById("output").innerHTML += predictions.length + " face detected" + "<br>";
 
         if (predictions.length != 1) {
             document.querySelector("video").style.backgroundColor = "red";
+            document.getElementById("output").innerHTML += predictions.length + " face detected" + " at " + time + "<hr>";
         }
         if (predictions.length == 1) {
             document.querySelector("video").style.backgroundColor = "green";
