@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>AICL | Face Detection</title>
+    <title>AICL | Face Recognition</title>
 
     <!-- INCLUDING TENSORFLOW CORE V2.4.0 -->
     <script src="https://unpkg.com/@tensorflow/tfjs-core@2.4.0/dist/tf-core.js"></script>
@@ -19,6 +19,9 @@
     <!-- INCLUDING BACKEND (use CPU or WASM or WEBGL)-->
     <!-- <script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.4.0/dist/tf-backend-webgl.js"></script>     -->
     <script src="https://unpkg.com/@tensorflow/tfjs-backend-cpu@2.4.0/dist/tf-backend-cpu.js"></script>
+
+    <!-- INCLUDING FACE API.JS -->
+    <script src="https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/dist/face-api.js"></script>
 
     <!-- ALL STYLINGS CAN BE DONE HERE -->
     <style>
@@ -51,12 +54,11 @@
     <div>
         <code id="output"></code>
     </div>
+
     <script>
     window.onload = function() {
     var video = document.querySelector("video");
-    
     // Accessing the camera stream
-
     // For cross browser compatibility
     // navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => video.srcObject = stream);
@@ -76,20 +78,47 @@
         if (predictions.length == 1) {
             document.querySelector("video").style.backgroundColor = "green";
         }
+
+        // Face recognition
+
+        // load
+        await faceapi.loadSsdMobilenetv1Model('/models')
+        // accordingly for the other models:
+        // await faceapi.loadTinyFaceDetectorModel('/models')
+        // await faceapi.loadMtcnnModel('/models')
+        // await faceapi.loadFaceLandmarkModel('/models')
+        // await faceapi.loadFaceLandmarkTinyModel('/models')
+        // await faceapi.loadFaceRecognitionModel('/models')
+        // await faceapi.loadFaceExpressionModel('/models')
+
+        const results = await faceapi
+          .detectAllFaces(referenceImage)
+          .withFaceLandmarks()
+          .withFaceDescriptors()
+
+        if (!results.length) {
+          return
+        }
+
+        // create FaceMatcher with automatically assigned labels
+        // from the detection results for the reference image
+        const faceMatcher = new faceapi.FaceMatcher(results)
+
+        const singleResult = await faceapi
+          .detectSingleFace(queryImage1)
+          .withFaceLandmarks()
+          .withFaceDescriptor()
+
+        if (singleResult) {
+          const bestMatch = faceMatcher.findBestMatch(singleResult.descriptor)
+          console.log(bestMatch.toString())
+        }
       }
       
       setInterval(main, 1000);
     }
+
     </script>
 </body>
 </html>
-
-<!--
-Examination guidelines:
-1. Keep camera position correctly such that your whole face is visible in the video frame.
-2. Avoid staying too far or too close.
-3. Avoid eating, drinking, or doing other activities that tend to hide your face while taking exam.
-4. Ensure good lightening in the room and avoid glare.
-5. Don't wear mask, hat or any additional accessories, whereas wearing specs is allowed.
-6. Avoid combing your hair, turning around.
--->
+    
